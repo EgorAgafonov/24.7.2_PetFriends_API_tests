@@ -6,7 +6,7 @@ pf = PetFriends()
 
 
 def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
-    """ Проверяем что запрос api ключа возвращает статус 200 и в тезультате содержится слово key"""
+    """ Проверяем что запрос api ключа возвращает статус 200 и в результате содержится слово key"""
 
     # Отправляем запрос и сохраняем полученный ответ с кодом статуса в status, а текст ответа в result
     status, result = pf.get_api_key(email, password)
@@ -16,7 +16,7 @@ def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     assert 'key' in result
 
 
-def test_get_all_pets_with_valid_key(filter='my_pets'):
+def test_get_all_pets_with_valid_key(filter=''):
     """ Проверяем что запрос всех питомцев возвращает не пустой список.
     Для этого сначала получаем api ключ и сохраняем в переменную auth_key. Далее используя этого ключ
     запрашиваем список всех питомцев и проверяем что список не пустой.
