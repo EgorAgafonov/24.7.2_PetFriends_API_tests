@@ -29,8 +29,8 @@ def test_get_all_pets_with_valid_key(filter=''):
     assert len(result['pets']) > 0
 
 
-def test_add_new_pet_with_valid_data(name='Гарфилд', animal_type='жук-майский',
-                                     age='1', pet_photo='images/cat2.jpg'):
+def test_add_new_pet_with_valid_data(name='Том', animal_type='сиамский',
+                                     age='4', pet_photo='images/cat1.jpg'):
     """Проверяем что можно добавить питомца с корректными данными"""
 
     # Получаем полный путь изображения питомца и сохраняем в переменную pet_photo
@@ -43,6 +43,34 @@ def test_add_new_pet_with_valid_data(name='Гарфилд', animal_type='жук-
     status, result = pf.add_new_pet(auth_key, name, animal_type, age, pet_photo)
 
     # Сверяем полученный ответ с ожидаемым результатом
+    assert status == 200
+    assert result['name'] == name
+
+
+def test_successful_update_pet_foto(pet_photo='images/cat2.jpg'):
+    """Проверяем, что можно добавить фото в ранее созданную карточку питомца."""
+
+    _, auth_key = pf.get_api_key(valid_email, valid_password)
+    _, my_pets = pf.get_list_of_pets(auth_key, 'my_pets')
+    pet_photo = os.path.join(os.path.dirname(__file__), pet_photo)
+
+    if len(my_pets['pets']) > 0:
+        status, result = pf.update_pet_foto(auth_key, my_pets['pets'][0]['id'], pet_photo)
+
+        _, my_pets = pf.get_list_of_pets(auth_key, 'my_pets')
+
+        assert status == 200
+        assert result['pet_photo'] == my_pets['pets'][0]['pet_photo']
+    else:
+        raise Exception("There is no my pets")
+
+
+def test_successful_add_new_pet_without_foto(name='Чубайс', animal_type='древняя', age='1'):
+    """Проверяем возможность добавления базовых данных о питомце без фото."""
+
+    _, auth_key = pf.get_api_key(valid_email, valid_password)
+
+    status, result = pf.add_new_pet_simple(auth_key, name, animal_type, age)
     assert status == 200
     assert result['name'] == name
 
@@ -78,7 +106,7 @@ def test_successful_update_self_pet_info(name='Мурзик', animal_type='Ко�
     _, auth_key = pf.get_api_key(valid_email, valid_password)
     _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
-    # Если список не пустой, то пробуем обновить его имя, тип и возраст
+    # Еслди список не пустой, то пробуем обновить его имя, тип и возраст
     if len(my_pets['pets']) > 0:
         status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
 

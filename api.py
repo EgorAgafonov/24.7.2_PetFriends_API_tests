@@ -9,13 +9,13 @@ class PetFriends:
     def __init__(self):
         self.base_url = "https://petfriends.skillfactory.ru/"
 
-    def get_api_key(self, email: str, password: str) -> json:
+    def get_api_key(self, email: str, passwd: str) -> json:
         """Метод выполняет запрос к API сервера и возвращает статус запроса, а также результат в формате
         JSON с уникальным ключом пользователя, найденного по указанным email и password."""
 
         headers = {
             'email': email,
-            'password': password,
+            'password': passwd,
         }
         res = requests.get(self.base_url + 'api/key', headers=headers)
         status = res.status_code
@@ -26,24 +26,24 @@ class PetFriends:
             result = res.text
         return status, result
 
-    def add_new_pet_without_foto(self, auth_key: json, name: str, animal_type: str, age: str) -> json:
-        """Метод посредством POST запроса отправляет на сервер базовые данные о добавляемом питомце без фото,
-        а также возвращает код состояния ответа от сервера и результат в формате JSON с данными добавленного питомца."""
-
-        headers = {'ayth_key': auth_key['key']}
-        data = {'name': name, 'animal_type': animal_type, 'age': age}
-
-        res = requests.post(self.base_url + 'api/create_pet_simple', headers=headers, data=data)
-        status = res.status_code
-        result = ""
-        try:
-            result = res.json()
-        except json.decoder.JSONDecodeError:
-            result = res.text
-        return status, result
+    # def add_new_pet_simple(self, auth_key: json, name: str, animal_type: str, age: str) -> json:
+    #     """Метод посредством POST запроса отправляет на сервер базовые данные о добавляемом питомце без фото,
+    #     а также возвращает код состояния ответа и результат в формате JSON с данными добавленного питомца."""
+    #
+    #         headers = {'auth_key': auth_key['key']}
+    #         data = {'name': name, 'animal_type': animal_type, 'age': age}
+    #
+    #         res = requests.post(self.base_url + 'api/create_pet_simple', headers=headers, data=data)
+    #         status = res.status_code
+    #         result = ""
+    #         try:
+    #             result = res.json()
+    #         except json.decoder.JSONDecodeError:
+    #             result = res.text
+    #         return status, result
 
     def get_list_of_pets(self, auth_key: json, filter: str = "") -> json:
-        """Метод get_list_of_pets делает запрос к API сервера и возвращает статус запроса и результат в формате JSON
+        """Метод делает запрос к API сервера и возвращает статус запроса и результат в формате JSON
         со списком всех питомцев на платформе, а в случае использования в запросе единственного доступного фильтра
         'my_pets' - список только тех питомцев, которые были добавлены лично пользователем."""
 
@@ -59,10 +59,9 @@ class PetFriends:
             result = res.text
         return status, result
 
-    def add_new_pet(self, auth_key: json, name: str, animal_type: str,
-                    age: str, pet_photo: str) -> json:
-        """Метод отправляет (постит) на сервер данные о добавляемом питомце и возвращает статус
-        запроса на сервер и результат в формате JSON с данными добавленного питомца"""
+    def add_new_pet(self, auth_key: json, name: str, animal_type: str, age: str, pet_photo: str) -> json:
+        """Метод посредством POST запроса отправляет на сервер данные о добавляемом питомце, а также возвращает статус
+        запроса на сервер (код состояния ответа) и результат в формате JSON с данными добавленного питомца."""
 
         data = MultipartEncoder(
             fields={
@@ -83,10 +82,12 @@ class PetFriends:
         print(result)
         return status, result
 
+
     def delete_pet(self, auth_key: json, pet_id: str) -> json:
-        """Метод отправляет на сервер запрос на удаление питомца по указанному ID и возвращает
-        статус запроса и результат в формате JSON с текстом уведомления о успешном удалении.
-        На сегодняшний день тут есть баг - в result приходит пустая строка, но status при этом = 200"""
+        """Метод отправляет на сервер запрос на удаление питомца по указанному ID, а также возвращает
+        статус запроса (код состояния ответа) и результат в формате JSON с текстом уведомления об успешном удалении.
+        На текущую дату платформа https://petfriends.skillfactory.ru обладает неисправленным багом - в переменную result
+        приходит пустая строка, но значение кода состояния ответа при этом = 200."""
 
         headers = {'auth_key': auth_key['key']}
 
@@ -99,10 +100,32 @@ class PetFriends:
             result = res.text
         return status, result
 
-    def update_pet_info(self, auth_key: json, pet_id: str, name: str,
-                        animal_type: str, age: int) -> json:
-        """Метод отправляет запрос на сервер об обновлении данных питомуа по указанному ID и
-        возвращает статус запроса и result в формате JSON с обновлёнными данными питомца"""
+    def update_pet_foto(self, auth_key: json, pet_id: str, pet_photo: str) -> json:
+        """Метод отправляет запрос на сервер об обновлении фото добавленного питомуа по указанному ID,
+        а также возвращает статус запроса (код состояния ответа) и результат в формате JSON с обновлёнными
+        данными питомца."""
+
+        data = MultipartEncoder(
+            fields={
+                'pet_photo': (pet_photo, open(pet_photo, 'rb'), 'image/jpeg')
+            })
+        headers = {
+            'auth_key': auth_key['key'],
+            'Content-Type': data.content_type
+        }
+
+        res = requests.post(self.base_url + 'api/pets/set_photo/' + pet_id, headers=headers, data=data)
+        status = res.status_code
+        result = ""
+        try:
+            result = res.json()
+        except json.decoder.JSONDecodeError:
+            result = res.text
+        return status, result
+
+    def update_pet_info(self, auth_key: json, pet_id: str, name: str, animal_type: str, age: int) -> json:
+        """Метод отправляет запрос на сервер об обновлении данных питомуа по указанному ID, а также
+        возвращает статус запроса (код состояния ответа) и результат в формате JSON с обновлёнными данными питомца"""
 
         headers = {'auth_key': auth_key['key']}
         data = {
@@ -112,25 +135,6 @@ class PetFriends:
         }
 
         res = requests.put(self.base_url + 'api/pets/' + pet_id, headers=headers, data=data)
-        status = res.status_code
-        result = ""
-        try:
-            result = res.json()
-        except json.decoder.JSONDecodeError:
-            result = res.text
-        return status, result
-
-    def update_pet_foto(self, auth_key: json, pet_id: str, pet_photo: str) -> json:
-        """Метод отправляет запрос на сервер об обновлении только фото питомуа по указанному ID,
-        а также возвращает статус запроса и result в формате JSON с обновлёнными данными питомца"""
-
-        data = MultipartEncoder(fields={'pet_photo': (pet_photo, open(pet_photo, 'rb'), 'image/jpeg')})
-
-        headers = {'auth_key': auth_key['key'],
-                   'Content-Type': data.content_type
-                   }
-
-        res = requests.post(self.base_url + 'api/pets/set_photo/', headers=headers, data=data)
         status = res.status_code
         result = ""
         try:
