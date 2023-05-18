@@ -4,7 +4,7 @@ from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
 class PetFriends:
-    """Библиотека методов для тестирования API платформы https://petfriends.skillfactory.ru"""
+    """Библиотека методов для тестирования API платформы PetFriends."""
 
     def __init__(self):
         self.base_url = "https://petfriends.skillfactory.ru/"
@@ -26,21 +26,6 @@ class PetFriends:
             result = res.text
         return status, result
 
-    # def add_new_pet_simple(self, auth_key: json, name: str, animal_type: str, age: str) -> json:
-    #     """Метод посредством POST запроса отправляет на сервер базовые данные о добавляемом питомце без фото,
-    #     а также возвращает код состояния ответа и результат в формате JSON с данными добавленного питомца."""
-    #
-    #         headers = {'auth_key': auth_key['key']}
-    #         data = {'name': name, 'animal_type': animal_type, 'age': age}
-    #
-    #         res = requests.post(self.base_url + 'api/create_pet_simple', headers=headers, data=data)
-    #         status = res.status_code
-    #         result = ""
-    #         try:
-    #             result = res.json()
-    #         except json.decoder.JSONDecodeError:
-    #             result = res.text
-    #         return status, result
 
     def get_list_of_pets(self, auth_key: json, filter: str = "") -> json:
         """Метод делает запрос к API сервера и возвращает статус запроса и результат в формате JSON
@@ -83,22 +68,27 @@ class PetFriends:
         return status, result
 
 
-    def delete_pet(self, auth_key: json, pet_id: str) -> json:
-        """Метод отправляет на сервер запрос на удаление питомца по указанному ID, а также возвращает
-        статус запроса (код состояния ответа) и результат в формате JSON с текстом уведомления об успешном удалении.
-        На текущую дату платформа https://petfriends.skillfactory.ru обладает неисправленным багом - в переменную result
-        приходит пустая строка, но значение кода состояния ответа при этом = 200."""
+    def create_pet_simple(self, auth_key: json, name: str, animal_type: str, age: str) -> json:
+        """Метод отправляет на сервер информацию о добавляемом питомце в более простом формате - без фотографии.
+        Возвращает статус код и данные добавленного питомца в JSON"""
 
         headers = {'auth_key': auth_key['key']}
+        data = {'name': name, 'animal_type': animal_type, 'age': age}
 
-        res = requests.delete(self.base_url + 'api/pets/' + pet_id, headers=headers)
+        res = requests.post(self.base_url + 'api/create_pet_simple', headers=headers, data=data)
+
         status = res.status_code
+
         result = ""
         try:
             result = res.json()
         except json.decoder.JSONDecodeError:
             result = res.text
         return status, result
+
+
+
+
 
     def update_pet_foto(self, auth_key: json, pet_id: str, pet_photo: str) -> json:
         """Метод отправляет запрос на сервер об обновлении фото добавленного питомуа по указанному ID,
@@ -122,6 +112,25 @@ class PetFriends:
         except json.decoder.JSONDecodeError:
             result = res.text
         return status, result
+
+
+    def delete_pet(self, auth_key: json, pet_id: str) -> json:
+        """Метод отправляет на сервер запрос на удаление питомца по указанному ID, а также возвращает
+        статус запроса (код состояния ответа) и результат в формате JSON с текстом уведомления об успешном удалении.
+        На текущую дату платформа https://petfriends.skillfactory.ru обладает неисправленным багом - в переменную result
+        приходит пустая строка, но значение кода состояния ответа при этом = 200."""
+
+        headers = {'auth_key': auth_key['key']}
+
+        res = requests.delete(self.base_url + 'api/pets/' + pet_id, headers=headers)
+        status = res.status_code
+        result = ""
+        try:
+            result = res.json()
+        except json.decoder.JSONDecodeError:
+            result = res.text
+        return status, result
+
 
     def update_pet_info(self, auth_key: json, pet_id: str, name: str, animal_type: str, age: int) -> json:
         """Метод отправляет запрос на сервер об обновлении данных питомуа по указанному ID, а также

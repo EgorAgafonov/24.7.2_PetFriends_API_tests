@@ -47,7 +47,7 @@ def test_add_new_pet_with_valid_data(name='Том', animal_type='сиамски�
     assert result['name'] == name
 
 
-def test_successful_update_pet_foto(pet_photo='images/cat2.jpg'):
+def test_successful_update_pet_foto(pet_photo='images/cat1.jpg'):
     """Проверяем, что можно добавить фото в ранее созданную карточку питомца."""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
@@ -65,12 +65,15 @@ def test_successful_update_pet_foto(pet_photo='images/cat2.jpg'):
         raise Exception("There is no my pets")
 
 
-def test_successful_add_new_pet_without_foto(name='Чубайс', animal_type='древняя', age='1'):
+def test_successful_add_new_pet_without_foto(name='Том', animal_type='сиамский', age='4'):
     """Проверяем возможность добавления базовых данных о питомце без фото."""
 
+    # Запрашиваем ключ api и сохраняем в переменную auth_key
     _, auth_key = pf.get_api_key(valid_email, valid_password)
 
-    status, result = pf.add_new_pet_simple(auth_key, name, animal_type, age)
+    # Добавляем питомца
+    status, result = pf.create_pet_simple(auth_key, name, animal_type, age)
+
     assert status == 200
     assert result['name'] == name
 
