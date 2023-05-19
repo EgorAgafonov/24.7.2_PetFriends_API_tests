@@ -17,8 +17,19 @@ def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
 def test_get_all_pets_with_valid_key(filter=''):
     """ Проверяем что запрос всех питомцев возвращает не пустой список.
     Для этого сначала получаем api ключ и сохраняем в переменную auth_key. Далее используя этого ключ
-    запрашиваем список всех питомцев и проверяем что список не пустой.
+    запрашиваем список всех питомцев и проверяем, что список не пустой.
     Доступное значение параметра filter - 'my_pets' либо '' """
+
+    _, auth_key = pf.get_api_key(valid_email, valid_password)
+    status, result = pf.get_list_of_pets(auth_key, filter)
+
+    assert status == 200
+    assert len(result['pets']) > 0
+
+def test_my_pets_filter(filter='my_pets'):
+    """ Проверяем работу запроса при переданном параметре фильтра - 'my_pets', который выводит список питомцев,
+    добавленных пользователем. Для этого сначала получаем API ключ и сохраняем в переменную auth_key. Далее, используя
+    этот ключ, запрашиваем список своих питомцев и проверяем что список не пустой."""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
     status, result = pf.get_list_of_pets(auth_key, filter)
