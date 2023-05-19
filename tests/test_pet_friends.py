@@ -5,6 +5,8 @@ import os
 pf = PetFriends()
 
 
+# блок GET-запросов:
+
 def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     """Проверяем что запрос API ключа возвращает статус 200 и в результате содержится слово key."""
 
@@ -24,8 +26,8 @@ def test_get_api_key_for_invalid_user_successful(email=invalid_email, password=i
     assert 'key' not in result
 
 
-def test_get_all_pets_with_valid_key(filter=''):
-    """Проверяем что запрос всех питомцев возвращает не пустой список. Для этого сначала получаем api ключ и
+def test_get_all_pets_list(filter=''):
+    """Проверяем позитивный тест-кейс, что запрос всех питомцев возвращает не пустой список. Для этого сначала получаем api ключ и
     сохраняем в переменную auth_key. Далее используя этого ключ запрашиваем список всех питомцев и проверяем,
     что список не пустой. Доступное значение параметра filter - 'my_pets' либо ''"""
 
@@ -34,6 +36,8 @@ def test_get_all_pets_with_valid_key(filter=''):
 
     assert status == 200
     assert len(result['pets']) > 0
+
+# блок POST-запросов:
 
 
 def test_add_new_pet_with_valid_data(name='Гарфилд', animal_type='американская-борзая',
@@ -69,9 +73,11 @@ def test_add_new_pet_with_invalid_data(name='', animal_type='', age='', pet_phot
         assert status != 200
         assert 'name' not in result
 
+        # GET-запрос:
 
-def test_my_pets_filter(filter='my_pets'):
-    """ Проверяем работу запроса при переданном параметре фильтра - 'my_pets', который выводит список питомцев(a),
+
+def test_get_my_pets_list(filter='my_pets'):
+    """ Проверяем работу запроса при выбранном параметре фильтра - 'my_pets', который выводит список питомцев(a),
     добавленных(ого) пользователем. Для этого сначала получаем API ключ и сохраняем в переменную auth_key. Далее,
     используя этот ключ, запрашиваем список своих питомцев и проверяем, что список не пустой."""
 
@@ -81,9 +87,12 @@ def test_my_pets_filter(filter='my_pets'):
     assert status == 200
     assert len(result['pets']) > 0
 
+    # блок POST-запросов:
+
 
 def test_update_pet_foto_jpg(pet_photo='images/cat2.jpg'):
-    """Проверяем, что можно добавить фото питомца в ранее созданную карточку в валидном формате - xxx.jpg."""
+    """Проверяем, что можно добавить фото питомца в ранее созданную карточку в валидном формате
+     c расширением xxx.jpg."""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
     _, my_pets = pf.get_list_of_pets(auth_key, 'my_pets')
@@ -101,8 +110,8 @@ def test_update_pet_foto_jpg(pet_photo='images/cat2.jpg'):
 
 
 def test_update_pet_foto_invalid_bmp(pet_photo='images/cat3.bmp'):
-    """Проверяем негативный тест-кейс в случае, когда фото питомца передаётся в невалидном формате
-    графического файла - xxx.bmp (в соответствии с требованиями API-документации PetFriends API v1). Если
+    """Проверяем негативный тест-кейс в случае, когда фото питомца передаётся в невалидном формате графического
+    файла c расширением xxx.bmp (в соответствии с требованиями API-документации PetFriends API v1). Если
     система отказывает в запросе - негативный тест-кейс пройден. Если система все-таки добавляет в карточку фото
     питомца с некорректным форматом файла - вызываем исключение и создаем баг-репорт."""
 
@@ -119,6 +128,8 @@ def test_update_pet_foto_invalid_bmp(pet_photo='images/cat3.bmp'):
     else:
         assert status != 200
         assert result['pet_photo'] != my_pets['pets'][0]['pet_photo']
+
+        # блок POST-запросов:
 
 
 def test_add_new_pet_simple(name='Том', animal_type='американская-борзая', age=4.3):
@@ -152,7 +163,7 @@ def test_add_new_pet_simple_invalid_age_data_type(name='Том', animal_type='а
         assert result['name'] != name
 
 
-def test_add_new_pet_simple_invalid_breed_data_type(name='Том', animal_type=123123123, age='100'):
+def test_add_new_pet_simple_invalid_breed_data_type(name='Том', animal_type=123123123, age=70):
     """Проверяем негативный тест-кейс в случае, когда передаваемое значение переменной animal_type в запросе имеет
     числовой (number) тип данных, тогда как в соответствии с требованиями API-документации PetFriends API v1 значение
     параметра animal_type должно принимать строчный тип данных (string). Если система отказывает в запросе -
@@ -171,6 +182,7 @@ def test_add_new_pet_simple_invalid_breed_data_type(name='Том', animal_type=1
         assert status != 200
         assert result['name'] != name
 
+
 def test_add_new_pet_simple_invalid_age_value(name='Том', animal_type=123123123, age='999999999999999999999999'):
     """Проверяем негативный тест-кейс в случае, когда переменная age в запросе передает системе любое
      значение из цифр, что будет не соответствовать реальной продолжительности жизни любого животного на земле :).
@@ -188,6 +200,8 @@ def test_add_new_pet_simple_invalid_age_value(name='Том', animal_type=1231231
     else:
         assert status != 200
         assert result['name'] != name
+
+        # DELETE-запрос:
 
 
 def test_successful_delete_self_pet():
@@ -208,8 +222,10 @@ def test_successful_delete_self_pet():
     assert status == 200
     assert pet_id not in my_pets.values()
 
+    # блок PUT-запросов:
 
-def test_successful_update_self_pet_info(name='Ninja-cat', animal_type='Japan-NES', age=33.6):
+
+def test_successful_update_self_pet_info(name='Ninja-cat', animal_type='Japan-Famicom', age=33.6):
     """Проверяем возможность обновления информации о питомце"""
 
     _, auth_key = pf.get_api_key(valid_email, valid_password)
@@ -223,7 +239,8 @@ def test_successful_update_self_pet_info(name='Ninja-cat', animal_type='Japan-NE
     else:
         raise Exception("Добавленные вами питомцы в списке отсутствуют.")
 
-def test_update_self_pet_invalid_age_value(name='Ninja-cat', animal_type='Japan-NES', age=9999999999999999999):
+
+def test_update_self_pet_invalid_age_value(name='Матроскин', animal_type='полостатый', age=9999999999999999999):
     """Проверяем негативный тест-кейс в случае, когда переменная age в запросе передает системе любое
     значение из цифр, что будет не соответствовать реальной продолжительности жизни любого животного на земле :).
     Если система отказывает в запросе - негативный тест-кейс пройден. Если система все-таки обновляет карточку
@@ -236,6 +253,46 @@ def test_update_self_pet_invalid_age_value(name='Ninja-cat', animal_type='Japan-
     if status == 200 and result['name'] == name:
         raise Exception(f'Обнаружена ошибка - платформа PetFriends принимает любое передаваемое цифренное '
                         f'значение параметра age.\n'
+                        f'Занести баг в баг-трэкинговую систему и создать баг-репорт.')
+    else:
+        assert status != 200
+        assert result['name'] != name
+
+
+def test_update_self_pet_invalid_breed_data_type(name='Гав', animal_type=123456789, age=3):
+    """Проверяем негативный тест-кейс в случае, когда передаваемое значение переменной animal_type в запросе имеет
+    числовой (number) тип данных, тогда как в соответствии с требованиями API-документации PetFriends API v1 значение
+    параметра animal_type должно принимать строчный тип данных (string). Если система отказывает в запросе - негативный
+     тест-кейс пройден. Если система все-таки обновляет карточку питомца некорректными данными - вызываем исключение
+      и создаем баг-репорт."""
+
+    _, auth_key = pf.get_api_key(valid_email, valid_password)
+    _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
+    status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
+
+    if status == 200 and result['name'] == name:
+        raise Exception(f'Обнаружена ошибка - платформа PetFriends принимает параметр animal_type в невалидном'
+                        f' числовом (number) типе данных.\n'
+                        f'Занести баг в баг-трэкинговую систему и создать баг-репорт.')
+    else:
+        assert status != 200
+        assert result['name'] != name
+
+
+def test_update_self_pet_invalid_age_data_type(name='Леопольд', animal_type='подлый трус', age='3'):
+    """Проверяем негативный тест-кейс в случае, когда передаваемое значение переменной age в запросе имеет строковый
+    (str) тип данных, тогда как в соответствии с требованиями API-документации PetFriends API v1 значение параметра age
+    должно принимать тип данных числа(number). Если система отказывает в запросе - негативный тест-кейс
+    пройден. Если система все-таки создает простую карточку питомца с неверным типом переданных данных - вызываем
+    исключение и создаем баг-репорт."""
+
+    _, auth_key = pf.get_api_key(valid_email, valid_password)
+    _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
+    status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
+
+    if status == 200 and result['name'] == name:
+        raise Exception(f'Обнаружена ошибка - платформа PetFriends принимает параметр age в невалидном '
+                        f'строковом (str) формате.\n'
                         f'Занести баг в баг-трэкинговую систему и создать баг-репорт.')
     else:
         assert status != 200
