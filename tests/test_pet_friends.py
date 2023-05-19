@@ -182,8 +182,8 @@ def test_add_new_pet_simple_invalid_age_value(name='Том', animal_type=1231231
     status, result = pf.create_pet_simple(auth_key, name, animal_type, age)
 
     if status == 200 and result['name'] == name:
-        raise Exception(f'Обнаружена ошибка - платформа PetFriends принимает параметр animal_type в невалидном'
-                        f' числовом (number) типе данных.\n'
+        raise Exception(f'Обнаружена ошибка - платформа PetFriends принимает любое передаваемое цифренное '
+                        f'значение параметра age.\n'
                         f'Занести баг в баг-трэкинговую систему и создать баг-репорт.')
     else:
         assert status != 200
@@ -212,7 +212,6 @@ def test_successful_delete_self_pet():
 def test_successful_update_self_pet_info(name='Ninja-cat', animal_type='Japan-NES', age=33.6):
     """Проверяем возможность обновления информации о питомце"""
 
-    # Получаем ключ auth_key и список своих питомцев
     _, auth_key = pf.get_api_key(valid_email, valid_password)
     _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
 
@@ -222,4 +221,22 @@ def test_successful_update_self_pet_info(name='Ninja-cat', animal_type='Japan-NE
         assert status == 200
         assert result['name'] == name
     else:
-        raise Exception("There is no my pets")
+        raise Exception("Добавленные вами питомцы в списке отсутствуют.")
+
+def test_update_self_pet_invalid_age_value(name='Ninja-cat', animal_type='Japan-NES', age=9999999999999999999):
+    """Проверяем негативный тест-кейс в случае, когда переменная age в запросе передает системе любое
+    значение из цифр, что будет не соответствовать реальной продолжительности жизни любого животного на земле :).
+    Если система отказывает в запросе - негативный тест-кейс пройден. Если система все-таки обновляет карточку
+    питомца некорректными данными - вызываем исключение и создаем баг-репорт."""
+
+    _, auth_key = pf.get_api_key(valid_email, valid_password)
+    _, my_pets = pf.get_list_of_pets(auth_key, "my_pets")
+    status, result = pf.update_pet_info(auth_key, my_pets['pets'][0]['id'], name, animal_type, age)
+
+    if status == 200 and result['name'] == name:
+        raise Exception(f'Обнаружена ошибка - платформа PetFriends принимает любое передаваемое цифренное '
+                        f'значение параметра age.\n'
+                        f'Занести баг в баг-трэкинговую систему и создать баг-репорт.')
+    else:
+        assert status != 200
+        assert result['name'] != name
