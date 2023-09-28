@@ -1,11 +1,12 @@
 from api import PetFriends
 from settings import valid_email, valid_password, invalid_email, invalid_password
 import os
-
+import pytest
+import time
+from tests.conftest import duration_time_of_test,
 
 pf = PetFriends()
 
-# блок GET-запросов:
 
 def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     """Проверяем что запрос API ключа возвращает статус 200 и в результате содержится слово key."""
@@ -36,6 +37,7 @@ def test_get_all_pets_list(filter=''):
 
     assert status == 200
     assert len(result['pets']) > 0
+
 
 # блок POST-запросов:
 
