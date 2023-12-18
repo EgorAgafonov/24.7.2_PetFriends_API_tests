@@ -3,11 +3,12 @@ from settings import valid_email, valid_password, invalid_email, invalid_passwor
 import os
 import pytest
 import time
-from tests.conftest import duration_time_of_test,
+from conftest import duration_time_of_test, time_decorator
 
 pf = PetFriends()
 
 
+@duration_time_of_test
 def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     """Проверяем что запрос API ключа возвращает статус 200 и в результате содержится слово key."""
 
@@ -43,7 +44,7 @@ def test_get_all_pets_list(filter=''):
 
 
 def test_add_new_pet_with_valid_data(name='Гарфилд', animal_type='американская-борзая',
-                                     age='40', pet_photo='images/cat2.jpg'):
+                                     age='40', pet_photo='images/cat3.bmp'):
     """Проверяем, что можно создать карточку питомца с полными (включая фотографию), корректными данными."""
 
     pet_photo = os.path.join(os.path.dirname(__file__), pet_photo)

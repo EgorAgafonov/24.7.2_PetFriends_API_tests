@@ -1,8 +1,8 @@
 import time
 import pytest
+from pytest import fixture
 
 
-@pytest.fixture()
 def duration_time_of_test(func):
     """Функция-декоратор для определения длительности авто-теста с момента запуска\до момента его окончания."""
 
@@ -21,10 +21,11 @@ def duration_time_of_test(func):
     return wrapper
 
 
-@pytest.fixture()
 def time_decorator(func):
     def wrapper(*args, **kwargs):
         print(f'Тест начат:{time.asctime()}')
         func(*args, **kwargs)
         print(f'Тест окончен:{time.asctime()}')
-    return wrapper()
+        return func(*args, **kwargs)
+
+    return wrapper
