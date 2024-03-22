@@ -23,9 +23,9 @@ def duration_time_of_test(func):
 
 def time_decorator(func):
     def wrapper(*args, **kwargs):
-        print(f'Тест начат:{time.asctime()}')
+        print(f'\nТест начат:{time.asctime()}')
         func(*args, **kwargs)
-        print(f'Тест окончен:{time.asctime()}')
+        print(f'Тест окончен:{time.asctime()}\n')
         return func(*args, **kwargs)
 
     return wrapper

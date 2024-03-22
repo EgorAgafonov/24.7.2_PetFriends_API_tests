@@ -3,6 +3,7 @@ import requests
 from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
+
 class PetFriends:
     """Библиотека методов для тестирования API платформы PetFriends."""
 

@@ -18,6 +18,7 @@ def test_get_api_key_for_valid_user(email=valid_email, password=valid_password):
     assert 'key' in result
 
 
+@time_decorator
 def test_get_api_key_for_invalid_user_successful(email=invalid_email, password=invalid_password):
     """Проверяем негативный тест-кейс, что запрос API ключа с незарегистрированными на платформе данными пользователя
     (email, password) не возвращает статуса = 200, а ответ (результат) сервера не содержит ключа 'key'."""
@@ -28,6 +29,7 @@ def test_get_api_key_for_invalid_user_successful(email=invalid_email, password=i
     assert 'key' not in result
 
 
+@time_decorator
 def test_get_all_pets_list(filter=''):
     """Проверяем позитивный тест-кейс, что запрос всех питомцев возвращает не пустой список. Для этого сначала получаем api ключ и
     сохраняем в переменную auth_key. Далее используя этого ключ запрашиваем список всех питомцев и проверяем,
