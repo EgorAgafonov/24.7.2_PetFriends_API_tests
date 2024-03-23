@@ -10,6 +10,21 @@ class PetFriends:
     def __init__(self):
         self.base_url = "https://petfriends.skillfactory.ru/"
 
+    def create_pet_simple(self, auth_key: json, name: str, animal_type: str, age: float) -> json:
+        """Метод отправляет на сервер базовую информацию о добавляемом питомце без фотографии.
+        Возвращает код состояния ответа на запрос и данные добавленного питомца в формате JSON."""
+
+        headers = {'auth_key': auth_key['key']}
+        data = {'name': name, 'animal_type': animal_type, 'age': age}
+        res = requests.post(self.base_url + 'api/create_pet_simple', headers=headers, data=data)
+        status = res.status_code
+        result = ""
+        try:
+            result = res.json()
+        except json.decoder.JSONDecodeError:
+            result = res.text
+        return status, result
+
     def get_api_key(self, email: str, password: str) -> json:
         """Метод выполняет запрос к API сервера и возвращает статус запроса, а также результат в формате
         JSON с уникальным ключом пользователя, найденного по указанным email и password."""
@@ -61,21 +76,6 @@ class PetFriends:
         except json.decoder.JSONDecodeError:
             result = res.text
         print(result)
-        return status, result
-
-    def create_pet_simple(self, auth_key: json, name: str, animal_type: str, age: float) -> json:
-        """Метод отправляет на сервер базовую информацию о добавляемом питомце без фотографии.
-        Возвращает код состояния ответа на запрос и данные добавленного питомца в формате JSON."""
-
-        headers = {'auth_key': auth_key['key']}
-        data = {'name': name, 'animal_type': animal_type, 'age': age}
-        res = requests.post(self.base_url + 'api/create_pet_simple', headers=headers, data=data)
-        status = res.status_code
-        result = ""
-        try:
-            result = res.json()
-        except json.decoder.JSONDecodeError:
-            result = res.text
         return status, result
 
     def update_pet_foto(self, auth_key: json, pet_id: str, pet_photo: str) -> json:

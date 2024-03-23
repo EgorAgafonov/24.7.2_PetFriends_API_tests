@@ -46,7 +46,7 @@ def test_get_all_pets_list(filter=''):
 
 
 def test_add_new_pet_with_valid_data(name='Гарфилд', animal_type='американская-борзая',
-                                     age='40', pet_photo='images/cat3.bmp'):
+                                     age='40', pet_photo='./images/cat1.jpg'):
     """Проверяем, что можно создать карточку питомца с полными (включая фотографию), корректными данными."""
 
     pet_photo = os.path.join(os.path.dirname(__file__), pet_photo)
